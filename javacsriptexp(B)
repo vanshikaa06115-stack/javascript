@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dynamic Product Filter</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="container">
+    <h2>Product List</h2>
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter">
+      <option value="All">All</option>
+      <option value="Clothing">Clothing</option>
+      <option value="Books">Books</option>
+    </select>
+
+    <div id="productList" class="product-list">
+      <!-- Products will be displayed here -->
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.container {
+  max-width: 600px;
+  border: 1px solid #333;
+  padding: 20px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+label {
+  font-weight: bold;
+}
+
+select {
+  margin-left: 10px;
+  padding: 5px;
+}
+
+.product-list {
+  margin-top: 20px;
+}
+
+.product-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+// Product data with category
+const products = [
+    { name: "T-Shirt", category: "Clothing" },
+    { name: "Jeans", category: "Clothing" },
+    { name: "Headphones", category: "Electronics" },
+    { name: "Smartphone", category: "Electronics" },
+    { name: "Novel", category: "Books" },
+    { name: "Cookbook", category: "Books" }
+  ];
+  
+  const categoryFilter = document.getElementById('categoryFilter');
+  const productList = document.getElementById('productList');
+  
+  function displayProducts(category) {
+    productList.innerHTML = ''; // Clear existing products
+  
+    // Filter products based on selected category
+    const filteredProducts = category === 'All' ? products : products.filter(product => product.category === category);
+  
+    // Display filtered products
+    filteredProducts.forEach(product => {
+      const productDiv = document.createElement('div');
+      productDiv.className = 'product-item';
+      productDiv.textContent = product.name;
+      productList.appendChild(productDiv);
+    });
+  }
+  
+  // Initial display - show all products
+  displayProducts('All');
+  
+  // Update product list on dropdown change
+  categoryFilter.addEventListener('change', (e) => {
+    displayProducts(e.target.value);
+  });
