@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SVG Freehand Drawing Tool</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <h1>SVG Drawing Tool</h1>
+
+  <svg id="drawingCanvas" width="800" height="500" style="border:1px solid black; background:#fff;">
+    <!-- Freehand paths will be added here -->
+  </svg>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+  body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  user-select: none; /* Prevent text selection while drawing */
+}
+
+h1 {
+  margin-bottom: 10px;
+}
+
+#drawingCanvas {
+  cursor: crosshair;
+  touch-action: none; /* Prevent touch scrolling while drawing on touch devices */
+}
+
+const svg = document.getElementById('drawingCanvas');
+
+let isDrawing = false;
+let currentPath;
+let points = [];
+
+function getMousePosition(evt) {
+  const CTM = svg.getScreenCTM();
+  return {
+    x: (evt.clientX - CTM.e) / CTM.a,
+    y: (evt.clientY - CTM.f) / CTM.d
+  };
+}
+
+svg.addEventListener('mousedown', (e) => {
+  isDrawing = true;
+  points = [];
+
+  const pos = getMousePosition(e);
+
+  // Create new path element
+  currentPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  currentPath.setAttribute('stroke', '#2196f3'); // Blue stroke
+  currentPath.setAttribute('stroke-width', 2);
+  currentPath.setAttribute('fill', 'none');
+  currentPath.setAttribute('stroke-linecap', 'round');
+  currentPath.setAttribute('stroke-linejoin', 'round');
+
+  points.push([pos.x, pos.y]);
+  currentPath.setAttribute('d', M${pos.x} ${pos.y});
+
+  svg.appendChild(currentPath);
+});
+
+svg.addEventListener('mousemove', (e) => {
+  if (!isDrawing) return;
+  const pos = getMousePosition(e);
+  points.push([pos.x, pos.y]);
+
+  // Build path string
+  let d = M${points[0][0]} ${points[0][1]};
+  for (let i = 1; i < points.length; i++) {
+    d += ` L${points[i][0]} ${points[i][1]}`;
+  }
+  currentPath.setAttribute('d', d);
+});
+
+svg.addEventListener('mouseup', () => {
+  isDrawing = false;
+  points = [];
+  currentPath = null;
+});
+
+svg.addEventListener('mouseleave', () => {
+  if (isDrawing) {
+    isDrawing = false;
+    points = [];
+    currentPath = null;
+  }
+});
